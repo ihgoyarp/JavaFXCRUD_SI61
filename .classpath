@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+    <classpathentry kind="src" path="src"/>
+    <classpathentry kind="output" path="bin"/>
+    <classpathentry kind="lib" path="lib/mysql-connector-j-9.7.0.jar"/>
+    <classpathentry kind="lib" path="lib/lib/javafx.base.jar"/>
+    <classpathentry kind="lib" path="lib/lib/javafx.controls.jar"/>
+    <classpathentry kind="lib" path="lib/lib/javafx.graphics.jar"/>
+    <classpathentry kind="lib" path="lib/lib/javafx.fxml.jar"/>
+    <classpathentry kind="lib" path="lib/lib/javafx.swing.jar"/>
+    <classpathentry kind="lib" path="lib/lib/javafx.media.jar"/>
+</classpath>
