@@ -1,4 +1,10 @@
-# CRUD Mahasiswa – JavaFX + MySQL (Tanpa Maven)
+# CRUD Mahasiswa – JavaFX + SQLite (Tanpa Maven)
+
+> Aplikasi desktop CRUD data mahasiswa menggunakan JavaFX untuk tampilan
+> dan SQLite sebagai database lokal. Tidak memerlukan XAMPP, MySQL, atau server apapun.
+> Data tersimpan otomatis di file `data/mahasiswa.db` di dalam folder project.
+
+---
 
 ## Struktur Folder
 
@@ -6,109 +12,70 @@
 crud-mahasiswa/
 ├── src/
 │   ├── App.java           ← UI JavaFX (tampilan + event)
-│   ├── Mahasiswa.java     ← Model/data class
-│   ├── MahasiswaDAO.java  ← Semua query SQL (CRUD)
-│   └── DBConnection.java  ← Koneksi ke MySQL
+│   ├── Mahasiswa.java     ← Model data (Encapsulation)
+│   ├── MahasiswaDAO.java  ← Semua query SQL (Abstraction)
+│   └── DBConnection.java  ← Koneksi ke SQLite (Abstraction)
 ├── lib/
-│   ├── legal/             ← Lisensi JavaFX SDK (otomatis dari extract)
 │   ├── lib/               ← File .jar JavaFX SDK
-│   └── mysql-connector-j-9.7.0.jar  ← driver MySQL
-└── bin/                   ← hasil compile (dibuat otomatis)
+│   ├── legal/             ← Lisensi JavaFX (otomatis dari extract)
+│   └── sqlite-jdbc-3.53.1.0.jar
+├── bin/                   ← Hasil compile (otomatis dibuat)
+├── data/                  ← File database (otomatis dibuat saat pertama run)
+│   └── mahasiswa.db
+└── .vscode/
+    └── settings.json
 ```
 
 ---
 
-## LANGKAH 1 – Siapkan Database MySQL
-
-Buka MySQL / phpMyAdmin, jalankan SQL berikut:
-
-```sql
-CREATE DATABASE IF NOT EXISTS oopjava;
-USE oopjava;
-
-CREATE TABLE mahasiswa (
-    id      INT AUTO_INCREMENT PRIMARY KEY,
-    nim     VARCHAR(20)  NOT NULL,
-    nama    VARCHAR(100) NOT NULL,
-    jurusan VARCHAR(50)  NOT NULL
-);
-```
-
----
-
-## LANGKAH 2 – Download JavaFX SDK
+## LANGKAH 1 – Download JavaFX SDK
 
 1. Buka: https://gluonhq.com/products/javafx/
-2. Pilih versi **21 (LTS)**, OS sesuai komputer kamu (Windows/Mac/Linux)
-3. Extract → pindahkan **isi folder** hasil extract langsung ke `lib/`
-4. Setelah extract, di dalam `lib/` akan ada folder `legal/` dan `lib/` — itu yang dipakai
-5. Pastikan di dalam `lib/lib/` ada file-file `.jar` JavaFX
+2. Pilih versi **21 (LTS)**, sesuaikan OS kamu (Windows / Mac / Linux), tipe **SDK**
+3. Extract hasil download
+4. Pindahkan **isi folder** hasil extract langsung ke `lib/`
+5. Pastikan di dalam `lib/lib/` sudah ada file-file `.jar` JavaFX
 
-> **Jangan** buat subfolder `javafx-sdk/` di dalam `lib/`. Langsung taruh isinya ke `lib/`.
-
----
-
-## LANGKAH 3 – Siapkan MySQL Connector
-
-File `mysql-connector-j-9.7.0.jar` sudah ada di project kamu (folder `lib/`).
-Kalau belum, download dari: https://dev.mysql.com/downloads/connector/j/
+> Setelah extract, di dalam `lib/` akan ada 2 folder: `legal/` dan `lib/` — itu yang dipakai.
 
 ---
 
-## LANGKAH 4 – Konfigurasi VS Code
+## LANGKAH 2 – Download SQLite JDBC
 
-Buka file `.vscode/settings.json`, isi seperti ini:
+1. Buka: https://github.com/xerial/sqlite-jdbc/releases
+2. Cari versi terbaru, download file **`sqlite-jdbc-3.53.1.0.jar`**
+   - Pilih yang **tanpa** embel-embel (`-natives`, `-sources`, `-android`, dll)
+   - Cukup file `sqlite-jdbc-3.53.1.0.jar` saja
+3. Taruh di folder `lib/`
+
+---
+
+## LANGKAH 3 – Konfigurasi VS Code
+
+Buat file `.vscode/settings.json` dengan isi:
 
 ```json
 {
     "java.project.sourcePaths": ["src"],
     "java.project.outputPath": "bin",
     "java.project.referencedLibraries": [
-        "lib/**/*.jar",
-        "lib/lib/**/*.jar"
+        "lib/*.jar",
+        "lib/lib/*.jar"
     ]
 }
 ```
 
 ---
 
-## LANGKAH 5 – Test Koneksi Database
+## LANGKAH 4 – Compile
 
-Sebelum compile aplikasi utama, test dulu koneksi ke MySQL.
-Jalankan dari folder root `crud-mahasiswa/`:
-
-### Mac / Linux
-```bash
-javac -cp "lib/mysql-connector-j-9.7.0.jar" src/DBConnection.java src/TestKoneksi.java
-java -cp "src:lib/mysql-connector-j-9.7.0.jar" TestKoneksi
-```
-
-### Windows (CMD)
-```bat
-javac -cp "lib\mysql-connector-j-9.7.0.jar" src\DBConnection.java src\TestKoneksi.java
-java -cp "src;lib\mysql-connector-j-9.7.0.jar" TestKoneksi
-```
-
-Jika berhasil akan muncul:
-```
-Koneksi BERHASIL!
-Database: oopjava
-```
-
-> `DBConnection.java` tidak bisa dijalankan langsung karena tidak punya `main` method.
-> Gunakan `TestKoneksi.java` untuk mengecek koneksi.
-
----
-
-## LANGKAH 6 – Compile (di Terminal)
-
-Jalankan dari folder root `crud-mahasiswa/` (bukan dari dalam `src/`):
+Jalankan dari folder root **`crud-mahasiswa/`** (bukan dari dalam `src/`):
 
 ### Mac / Linux
 ```bash
 javac --module-path lib/lib \
       --add-modules javafx.controls \
-      -cp "lib/mysql-connector-j-9.7.0.jar" \
+      -cp "lib/sqlite-jdbc-3.53.1.0.jar" \
       -d bin \
       src/*.java
 ```
@@ -117,7 +84,7 @@ javac --module-path lib/lib \
 ```bat
 javac --module-path lib\lib ^
       --add-modules javafx.controls ^
-      -cp "lib\mysql-connector-j-9.7.0.jar" ^
+      -cp "lib\sqlite-jdbc-3.53.1.0.jar" ^
       -d bin ^
       src\*.java
 ```
@@ -127,13 +94,13 @@ javac --module-path lib\lib ^
 
 ---
 
-## LANGKAH 7 – Jalankan Aplikasi
+## LANGKAH 5 – Jalankan Aplikasi
 
 ### Mac / Linux
 ```bash
 java --module-path lib/lib \
      --add-modules javafx.controls \
-     -cp "bin:lib/mysql-connector-j-9.7.0.jar" \
+     -cp "bin:lib/sqlite-jdbc-3.53.1.0.jar" \
      App
 ```
 
@@ -141,20 +108,34 @@ java --module-path lib/lib \
 ```bat
 java --module-path lib\lib ^
      --add-modules javafx.controls ^
-     -cp "bin;lib\mysql-connector-j-9.7.0.jar" ^
+     -cp "bin;lib\sqlite-jdbc-3.53.1.0.jar" ^
      App
 ```
+
+Saat pertama kali dijalankan, folder `data/` dan file `mahasiswa.db` akan **otomatis dibuat**.
+Tidak perlu setup database apapun.
 
 ---
 
 ## Cara Pakai Aplikasi
 
-| Aksi   | Cara                                                              |
-|--------|-------------------------------------------------------------------|
-| Tambah | Isi form NIM/Nama/Jurusan → klik **Simpan**                       |
+| Aksi   | Cara                                                                |
+|--------|---------------------------------------------------------------------|
+| Tambah | Isi form NIM / Nama / Jurusan → klik **Simpan**                     |
 | Edit   | Klik baris di tabel → data otomatis masuk form → ubah → **Simpan** |
-| Hapus  | Klik baris di tabel → klik **Hapus** → konfirmasi                 |
-| Batal  | Klik **Batal** untuk reset form                                   |
+| Hapus  | Klik baris di tabel → klik **Hapus** → konfirmasi                   |
+| Batal  | Klik **Batal** untuk reset form ke mode tambah baru                 |
+
+---
+
+## Konsep OOP dalam Project Ini
+
+| File | Konsep OOP | Penjelasan |
+|------|------------|------------|
+| `Mahasiswa.java` | **Encapsulation** | Properti `private`, akses hanya lewat getter/setter |
+| `DBConnection.java` | **Abstraction** | Detail koneksi disembunyikan, cukup panggil `getConnection()` |
+| `MahasiswaDAO.java` | **Abstraction** | Semua SQL dikumpulkan di sini, UI tidak perlu tahu cara kerjanya |
+| `App.java` | **Inheritance & Polymorphism** | `extends Application`, override method `start()` |
 
 ---
 
@@ -162,11 +143,9 @@ java --module-path lib\lib ^
 
 | Masalah | Solusi |
 |---------|--------|
-| `Koneksi GAGAL` | Cek MySQL aktif, nama DB `oopjava`, password di `DBConnection.java` |
-| `No suitable driver found` | Pastikan `mysql-connector-j-*.jar` disertakan di `-cp` saat compile **dan** run |
-| `module not found: javafx.controls` | Cek `--module-path` mengarah ke `lib/lib/` yang berisi file `.jar` JavaFX |
-| `Main method not found in DBConnection` | Normal! Jalankan `TestKoneksi` untuk test koneksi, bukan `DBConnection` |
 | `file not found: *.java` | Pastikan perintah dijalankan dari folder `crud-mahasiswa/`, bukan dari `src/` |
-| `Error: JavaFX runtime components missing` | Pastikan `--module-path` dan `--add-modules` sudah benar |
-| Tabel kosong padahal data ada | Cek nama kolom di SQL sesuai dengan `PropertyValueFactory` di `App.java` |
-# JavaFXCRUD_SI61
+| `module not found: javafx.controls` | Cek `--module-path` mengarah ke `lib/lib/` yang berisi file `.jar` JavaFX |
+| `No suitable driver found for jdbc:sqlite` | Pastikan `sqlite-jdbc-3.53.1.0.jar` ada di folder `lib/` dan disertakan di `-cp` |
+| `no such table: mahasiswa` | Hapus file `data/mahasiswa.db` lalu jalankan ulang — tabel dibuat otomatis |
+| `Note: uses deprecated API` | Bukan error, abaikan saja — aplikasi tetap berjalan normal |
+| Tombol Run VS Code tidak jalan | Jangan pakai tombol Run VS Code untuk JavaFX — selalu jalankan lewat terminal |
